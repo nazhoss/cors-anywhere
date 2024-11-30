@@ -45,6 +45,21 @@ cors_proxy.createServer({
         // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
         xfwd: false,
     },
+    handleInitialRequest: function (req, res) {
+        // Extract the URL from the request path
+        let targetUrl = req.url.substring(1); // Remove the leading `/`
+
+        // Automatically add protocol if missing
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            // Automatically add http:// if no protocol is specified
+            targetUrl = 'https://' + targetUrl; // Default to HTTPS if no protocol is present
+        }
+
+        // Set the corrected URL
+        req.url = targetUrl; // Update req.url with the correct format
+
+        // Proceed with the proxy server
+    }
 }).listen(port, host, function() {
     console.log('Running CORS Anywhere on ' + host + ':' + port);
 });
